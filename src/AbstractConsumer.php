@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Solcloud\Consumer;
 
 use Exception;
-use Psr\Log\LoggerInterface;
-use PhpAmqpLib\Message\AMQPMessage as Message;
 use PhpAmqpLib\Channel\AMQPChannel as Channel;
+use PhpAmqpLib\Message\AMQPMessage as Message;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 abstract class AbstractConsumer
@@ -19,10 +19,10 @@ abstract class AbstractConsumer
     /** @var Message */
     private $msg;
 
-    /** @var null|callback */
+    /** @var null|callable */
     private $callback = null;
 
-    /** @var null|callback */
+    /** @var null|callable */
     protected $callbackDefault = null;
 
     /** @var boolean */
@@ -55,7 +55,7 @@ abstract class AbstractConsumer
 
     /**
      * Main method for processing $msg from queue
-     * 
+     *
      * Recommended to call this method from callback (default or defined one using setCallback)
      * Try to avoid override this method
      * @param Message $msg
@@ -125,13 +125,13 @@ abstract class AbstractConsumer
     /**
      * Start consuming messages from $queueName, using provided params
      * @param string $queueName Name of queue consumer should consume from
-     * @param bool   $no_ack Use acknowledgment or not
+     * @param bool $no_ack Use acknowledgment or not
      * @param string $consumer_tag
-     * @param bool   $no_local
-     * @param bool   $exclusive
-     * @param bool   $nowait
-     * @param int    $ticket
-     * @param array  $arguments
+     * @param bool $no_local
+     * @param bool $exclusive
+     * @param bool $nowait
+     * @param int $ticket
+     * @param array<mixed> $arguments
      */
     public function consume(string $queueName, bool $no_ack = false, string $consumer_tag = '', bool $no_local = false, bool $exclusive = false, bool $nowait = false, int $ticket = null, array $arguments = []): void
     {
@@ -151,7 +151,7 @@ abstract class AbstractConsumer
     /**
      * Create new message
      * @param string $body
-     * @param array $properties
+     * @param array<string,int|string> $properties
      * @return Message
      */
     public function createMessage(string $body = '', array $properties = []): Message
@@ -188,12 +188,12 @@ abstract class AbstractConsumer
      */
     public function isMessageRedelivered(): bool
     {
-        return $this->getMessage()->isRedelivered();
+        return (bool)$this->getMessage()->isRedelivered();
     }
 
     /**
      * Send ack to broker telling that processing this message is complete and broker could delete msg
-     * 
+     *
      * It is ok to call this function multiple times, function will send ack only ones and only when expecting and only if not already called sendReject
      */
     public function sendAck(): void
@@ -206,7 +206,7 @@ abstract class AbstractConsumer
 
     /**
      * Send nack to broker indicating that broker should requeu msg if $requeu is true, otherwise broker delete msg from queue
-     * 
+     *
      * It is ok to call this function multiple times, function will send reject only ones and only when excpecting and only if not already called sendAck
      * @param boolean $requeue True will intruct broker to move msg to head of queue, false will delete message from queue
      */
@@ -223,9 +223,9 @@ abstract class AbstractConsumer
      * @param int $prefetchCount
      * @param int $prefetchSizeOctet
      */
-    public function setPrefetch(int $prefetchCount, int $prefetchSizeOctet = null): void
+    public function setPrefetch(int $prefetchCount, int $prefetchSizeOctet = 0): void
     {
-        $this->channel->basic_qos($prefetchSizeOctet, $prefetchCount, null);
+        $this->channel->basic_qos($prefetchSizeOctet, $prefetchCount, false);
     }
 
     /**
@@ -247,7 +247,7 @@ abstract class AbstractConsumer
         return $this->channel->is_consuming();
     }
 
-    public function closeChannel() :void
+    public function closeChannel(): void
     {
         $this->channel->close();
     }

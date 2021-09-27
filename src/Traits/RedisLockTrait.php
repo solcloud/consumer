@@ -2,73 +2,120 @@
 
 namespace Solcloud\Consumer\Traits;
 
-trait RedisLockTrait {
+trait RedisLockTrait
+{
 
     use RedisTrait;
 
-    public function jobExists($workerSubject, $jobUniqueIdentifier) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function jobExists(string $workerSubject, $jobUniqueIdentifier): bool
+    {
         $jobStatusValueOrFalse = $this->getRedis()->get($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier));
-        return ($jobStatusValueOrFalse !== FALSE);
+        return ($jobStatusValueOrFalse !== false);
     }
 
-    public function isJobComplete($workerSubject, $jobUniqueIdentifier) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function isJobComplete(string $workerSubject, $jobUniqueIdentifier): bool
+    {
         $jobStatusValueOrFalse = $this->getRedis()->get($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier));
-        if ($jobStatusValueOrFalse !== FALSE && $jobStatusValueOrFalse === 'OK') {
-            return TRUE;
+        if ($jobStatusValueOrFalse !== false && $jobStatusValueOrFalse === 'OK') {
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 
-    public function setJobComplete($workerSubject, $jobUniqueIdentifier, $expirationInSec = 24 * 60 * 60) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function setJobComplete(string $workerSubject, $jobUniqueIdentifier, int $expirationInSec = 24 * 60 * 60): void
+    {
         $this->getRedis()->set($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier), 'OK', ['ex' => $expirationInSec]);
     }
 
-    public function isJobFailed($workerSubject, $jobUniqueIdentifier) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function isJobFailed(string $workerSubject, $jobUniqueIdentifier): bool
+    {
         $jobStatusValueOrFalse = $this->getRedis()->get($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier));
-        if ($jobStatusValueOrFalse !== FALSE && $jobStatusValueOrFalse === 'FAIL') {
-            return TRUE;
+        if ($jobStatusValueOrFalse !== false && $jobStatusValueOrFalse === 'FAIL') {
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 
-    public function setJobFailed($workerSubject, $jobUniqueIdentifier, $expirationInSec = 24 * 60 * 60) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function setJobFailed(string $workerSubject, $jobUniqueIdentifier, int $expirationInSec = 24 * 60 * 60): void
+    {
         $this->getRedis()->set($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier), 'FAIL', ['ex' => $expirationInSec]);
     }
 
-    public function isJobWaiting($workerSubject, $jobUniqueIdentifier) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function isJobWaiting(string $workerSubject, $jobUniqueIdentifier): bool
+    {
         $jobStatusValueOrFalse = $this->getRedis()->get($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier));
-        if ($jobStatusValueOrFalse !== FALSE && $jobStatusValueOrFalse === 'WAIT') {
-            return TRUE;
+        if ($jobStatusValueOrFalse !== false && $jobStatusValueOrFalse === 'WAIT') {
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 
-    public function setJobWaiting($workerSubject, $jobUniqueIdentifier, $expirationInSec = 24 * 60 * 60) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function setJobWaiting(string $workerSubject, $jobUniqueIdentifier, int $expirationInSec = 24 * 60 * 60): void
+    {
         $this->getRedis()->set($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier), 'WAIT', ['ex' => $expirationInSec]);
     }
 
-    public function getJobRetryCount($workerSubject, $jobUniqueIdentifier) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function getJobRetryCount(string $workerSubject, $jobUniqueIdentifier): int
+    {
         $jobRetryValueOrFalse = $this->getRedis()->get($this->generateLockKey('retry', $workerSubject, $jobUniqueIdentifier));
-        if ($jobRetryValueOrFalse === FALSE) {
+        if ($jobRetryValueOrFalse === false) {
             return 0;
         }
 
-        return $jobRetryValueOrFalse;
+        return (int)$jobRetryValueOrFalse;
     }
 
-    public function incrementJobRetryCount($workerSubject, $jobUniqueIdentifier) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function incrementJobRetryCount(string $workerSubject, $jobUniqueIdentifier): void
+    {
         $this->getRedis()->incr($this->generateLockKey('retry', $workerSubject, $jobUniqueIdentifier));
     }
 
-    public function createJobIfNotExists($workerSubject, $jobUniqueIdentifier, $expirationInSec = 24 * 60 * 60) {
-        $this->getRedis()->set($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier), 'WAIT', ['nx', 'ex' => $expirationInSec]);
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    public function createJobIfNotExists(string $workerSubject, $jobUniqueIdentifier, int $expirationInSec = 24 * 60 * 60): void
+    {
+        $this->getRedis()->set($this->generateLockKey('status', $workerSubject, $jobUniqueIdentifier), 'WAIT', [
+            'nx', 'ex' => $expirationInSec,
+        ]);
         $this->getRedis()->set($this->generateLockKey('retry', $workerSubject, $jobUniqueIdentifier), 0, ['nx', 'ex' => $expirationInSec]);
     }
 
-    protected function generateLockKey($subject, $workerSubject, $jobUniqueIdentifier) {
+    /**
+     * @param int|string $jobUniqueIdentifier
+     */
+    protected function generateLockKey(string $subject, string $workerSubject, $jobUniqueIdentifier): string
+    {
         return sprintf('%s:%s:%s', $subject, $workerSubject, $jobUniqueIdentifier);
     }
 

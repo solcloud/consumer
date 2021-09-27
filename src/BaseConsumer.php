@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Solcloud\Consumer;
 
-use Throwable;
 use Exception;
 use PhpAmqpLib\Message\AMQPMessage as Message;
 use Solcloud\Consumer\Exceptions\MessageCannotBeParsed;
 use Solcloud\Consumer\Exceptions\NumberOfProcessedMessagesExceed;
+use Throwable;
 
 abstract class BaseConsumer extends AbstractConsumer
 {
@@ -39,7 +39,7 @@ abstract class BaseConsumer extends AbstractConsumer
 
     protected function setup(): void
     {
-        $this->callbackDefault = function($msg) {
+        $this->callbackDefault = function ($msg) {
             try {
                 $this->process($msg);
                 $this->processSucceed();
@@ -65,7 +65,7 @@ abstract class BaseConsumer extends AbstractConsumer
 
     /**
      * Try to parse $msg, if unable to parse throw MessageCannotBeParsed
-     * 
+     *
      * If throws MessageCannotBeParsed, processUnparsed() will fire
      * @param Message $msg
      * @throws MessageCannotBeParsed
@@ -73,7 +73,7 @@ abstract class BaseConsumer extends AbstractConsumer
     protected function parseMessage(Message $msg): void
     {
         $data = json_decode($msg->getBody());
-        if ($data === NULL) {
+        if ($data === null) {
             throw new MessageCannotBeParsed('Json decode failed! Not valid json data or recursion limit hit!');
         }
         if (!isset($data->meta) || !isset($data->data)) {
@@ -82,17 +82,17 @@ abstract class BaseConsumer extends AbstractConsumer
 
         $this->meta = $data->meta;
         $this->data = $data->data;
-        $this->response = NULL;
+        $this->response = null;
     }
 
     protected function isInvalidMessage(): bool
     {
-        return FALSE;
+        return false;
     }
 
     /**
      * Called when processing of msg succed (no exception is thrown)
-     * 
+     *
      * Warning: this method is not checked so beware of exception or fatal error
      */
     protected function processSucceed(): void
@@ -102,7 +102,7 @@ abstract class BaseConsumer extends AbstractConsumer
 
     /**
      * Called when parsing of msg failed (MessageCannotBeParsed or child is thrown $ex)
-     * 
+     *
      * Warning: this method is not checked so beware of exception or fatal error
      */
     protected function processUnparsed(Throwable $ex): void
@@ -114,7 +114,7 @@ abstract class BaseConsumer extends AbstractConsumer
 
     /**
      * Called when processing of msg failed (exception $ex is thrown)
-     * 
+     *
      * Warning: this method is not checked so beware of exception or fatal error
      */
     protected function processFailed(Throwable $ex): void
@@ -126,7 +126,7 @@ abstract class BaseConsumer extends AbstractConsumer
 
     /**
      * Called at the end of msg processing no matter if processing failed or succed
-     * 
+     *
      * Warning: this method is not checked so beware of exception or fatal error
      */
     protected function finishProcessing(): void
@@ -139,18 +139,18 @@ abstract class BaseConsumer extends AbstractConsumer
      * @param mixed $meta
      * @param mixed $data
      * @param bool $persistent
-     * @param array $properties
+     * @param array<string,int|string> $properties
      * @return Message
      */
     public function createMessageHelper($meta = [], $data = [], bool $persistent = true, array $properties = []): Message
     {
         return parent::createMessage(
-                        $this->createMessageBody($meta, $data)
-                        , array_merge(
-                                [
-                                    'delivery_mode' => ($persistent ? Message::DELIVERY_MODE_PERSISTENT : Message::DELIVERY_MODE_NON_PERSISTENT),
-                                ], $properties
-                        )
+            $this->createMessageBody($meta, $data)
+            , array_merge(
+                [
+                    'delivery_mode' => ($persistent ? Message::DELIVERY_MODE_PERSISTENT : Message::DELIVERY_MODE_NON_PERSISTENT),
+                ], $properties
+            )
         );
     }
 
@@ -163,10 +163,10 @@ abstract class BaseConsumer extends AbstractConsumer
     public function createMessageBody($meta = [], $data = []): string
     {
         $failIfFalse = json_encode(
-                [
-                    'meta' => $meta,
-                    'data' => $data,
-                ]
+            [
+                'meta' => $meta,
+                'data' => $data,
+            ]
         );
 
         if ($failIfFalse === false) {
@@ -210,12 +210,18 @@ abstract class BaseConsumer extends AbstractConsumer
         $this->publishCurrentMsgDataTo();
     }
 
+    /**
+     * @return mixed
+     */
     public function getResponse()
     {
         return $this->response;
     }
 
-    public function setResponse($response)
+    /**
+     * @param mixed $response
+     */
+    public function setResponse($response): void
     {
         $this->response = $response;
     }

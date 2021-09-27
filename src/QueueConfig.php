@@ -5,18 +5,31 @@ namespace Solcloud\Consumer;
 class QueueConfig
 {
 
+    /** @var string */
     protected $host = 'CHANGEME';
+    /** @var int */
     protected $port = 5672;
+    /** @var string */
     protected $username = 'CHANGEME';
+    /** @var string */
     protected $password = 'CHANGEME';
+    /** @var string */
     protected $vhost = 'CHANGEME';
+    /** @var bool */
     protected $insist = false;
+    /** @var string */
     protected $loginMethod = 'AMQPLAIN';
+    /** @var string */
     protected $locale = 'en_US';
+    /** @var int */
     protected $connectionTimeoutSec = 6;
+    /** @var int */
     protected $readWriteTimeoutSec = 6;
+    /** @var float */
     protected $rpcTimeoutFloat = 6.0;
+    /** @var bool */
     protected $keepalive = true;
+    /** @var int */
     protected $heartbeatSec = 0;
 
     public function getHost(): string

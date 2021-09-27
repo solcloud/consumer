@@ -5,7 +5,9 @@ namespace Solcloud\Consumer;
 class QueueRoute
 {
 
+    /** @var string */
     private $exchange;
+    /** @var string */
     private $routingKey;
 
     public function __construct(string $routingKey, string $exchange = '')
