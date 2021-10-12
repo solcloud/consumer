@@ -2,7 +2,7 @@
     "name": "solcloud/consumer",
     "description": "RabbitMQ base worker for queue consuming",
     "license": "MIT",
-    "keywords": ["rabbitmq", "worker", "consumer", "php-amqplib", "queue"],
+    "keywords": ["rabbitmq", "worker", "consumer", "amqp", "amqplib", "queue"],
     "require": {
         "php": ">= 7.1",
         "php-amqplib/php-amqplib": "2.12.*",
