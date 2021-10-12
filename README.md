@@ -79,3 +79,7 @@ Worker can log to `Psr\Log\LoggerInterface` compatible logger.
 $worker->setLogger(new YourPsrLogger());
 $worker->getLogger()->info('Something');
 ```
+
+## Examples
+
+For complete example for this readme see [example.php](example.php)
