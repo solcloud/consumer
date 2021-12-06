@@ -130,8 +130,8 @@ abstract class AbstractConsumer
      * @param bool $no_local
      * @param bool $exclusive
      * @param bool $nowait
-     * @param int $ticket
-     * @param array<mixed> $arguments
+     * @param ?int $ticket
+     * @param array $arguments
      */
     public function consume(string $queueName, bool $no_ack = false, string $consumer_tag = '', bool $no_local = false, bool $exclusive = false, bool $nowait = false, int $ticket = null, array $arguments = []): void
     {
@@ -205,10 +205,10 @@ abstract class AbstractConsumer
     }
 
     /**
-     * Send nack to broker indicating that broker should requeu msg if $requeu is true, otherwise broker delete msg from queue
+     * Send nack to broker indicating that broker should requeue msg if $requeue is true, otherwise broker delete msg from queue
      *
-     * It is ok to call this function multiple times, function will send reject only ones and only when excpecting and only if not already called sendAck
-     * @param boolean $requeue True will intruct broker to move msg to head of queue, false will delete message from queue
+     * It is ok to call this function multiple times, function will send reject only ones and only when expecting and only if not already called sendAck
+     * @param boolean $requeue True will instruct broker to move msg to head of queue, false will delete message from queue
      */
     public function sendReject(bool $requeue = true): void
     {
@@ -253,7 +253,7 @@ abstract class AbstractConsumer
     }
 
     /**
-     * Use this method for maintaining connection (hearbeat, tcp) between time expensive task from process() method
+     * Use this method for maintaining connection (heartbeat, tcp) between time expensive task from process() method
      */
     public function refreshConnection(): void
     {
@@ -270,16 +270,12 @@ abstract class AbstractConsumer
 
     /**
      * Set logger for logging
-     * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
 
-    /**
-     * @return LoggerInterface
-     */
     public function getLogger(): LoggerInterface
     {
         return $this->logger;
