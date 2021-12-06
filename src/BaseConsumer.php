@@ -187,6 +187,14 @@ abstract class BaseConsumer extends AbstractConsumer
     }
 
     /**
+     * Publish current msg data to targets from $queueRoute
+     */
+    protected function publishCurrentMsgDataToRoute(QueueRoute $queueRoute): void
+    {
+        $this->publishCurrentMsgDataTo($queueRoute->getExchange(), $queueRoute->getRoutingKey());
+    }
+
+    /**
      * Publish current msg data to another exchange, if default values are provided than msg is sent to current queue using amqp default exchange
      * @param string|null $exchange
      * @param string|null $routingKey
