@@ -5,8 +5,8 @@
     "keywords": ["rabbitmq", "worker", "consumer", "amqp", "amqplib", "queue"],
     "require": {
         "php": ">= 7.1",
-        "php-amqplib/php-amqplib": "2.12.*",
-        "psr/log": "^1.1"
+        "php-amqplib/php-amqplib": "^3.1",
+        "psr/log": "*"
     },
     "autoload": {
         "psr-4": {
