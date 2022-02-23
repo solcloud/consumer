@@ -39,7 +39,7 @@ trait RedisTrait
     {
         $expectedValue = $this->getRedis()->get($key);
         if ($expectedValue && $expectedValue === $value) {
-            $this->getRedis()->delete($key);
+            $this->getRedis()->del($key);
         }
     }
 
