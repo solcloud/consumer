@@ -139,18 +139,18 @@ abstract class BaseConsumer extends AbstractConsumer
      * @param mixed $meta
      * @param mixed $data
      * @param bool $persistent
-     * @param array<string,int|string> $properties
      * @return Message
      */
-    public function createMessageHelper($meta = [], $data = [], bool $persistent = true, array $properties = []): Message
+    public function createMessageHelper($meta = [], $data = [], bool $persistent = true): Message
     {
+        $properties['delivery_mode'] = ($persistent ? Message::DELIVERY_MODE_PERSISTENT : Message::DELIVERY_MODE_NON_PERSISTENT);
+        if (is_numeric($meta['_priority'] ?? false)) {
+            $properties['priority'] = (int)min(1, max(255, (int)$meta['_priority']));
+        }
+
         return parent::createMessage(
             $this->createMessageBody($meta, $data)
-            , array_merge(
-                [
-                    'delivery_mode' => ($persistent ? Message::DELIVERY_MODE_PERSISTENT : Message::DELIVERY_MODE_NON_PERSISTENT),
-                ], $properties
-            )
+            , $properties
         );
     }
 
