@@ -7,7 +7,7 @@ use PhpAmqpLib\Channel\AMQPChannel as Channel;
 use PhpAmqpLib\Connection\AbstractConnection as Connection;
 use PhpAmqpLib\Message\AMQPMessage as Message;
 
-class Publisher
+class Publisher implements IPublisher
 {
 
     /**
