@@ -136,12 +136,12 @@ abstract class BaseConsumer extends AbstractConsumer
 
     /**
      * Create msg that can be published to broker
-     * @param mixed $meta
-     * @param mixed $data
+     * @param array $meta
+     * @param array $data
      * @param bool $persistent
      * @return Message
      */
-    public function createMessageHelper($meta = [], $data = [], bool $persistent = true): Message
+    public function createMessageHelper(array $meta = [], array $data = [], bool $persistent = true): Message
     {
         $properties['delivery_mode'] = ($persistent ? Message::DELIVERY_MODE_PERSISTENT : Message::DELIVERY_MODE_NON_PERSISTENT);
         if (is_numeric($meta['_priority'] ?? false)) {
@@ -156,11 +156,11 @@ abstract class BaseConsumer extends AbstractConsumer
 
     /**
      * Create string for use as msg body payload
-     * @param mixed $meta
-     * @param mixed $data
+     * @param array $meta
+     * @param array $data
      * @return string
      */
-    public function createMessageBody($meta = [], $data = []): string
+    public function createMessageBody(array $meta = [], array $data = []): string
     {
         $failIfFalse = json_encode(
             [
@@ -205,7 +205,7 @@ abstract class BaseConsumer extends AbstractConsumer
             $exchange = '';
             $routingKey = $this->getConsumingQueueName();
         }
-        $this->publishMessage($this->createMessageHelper($this->meta, $this->data), $exchange, $routingKey);
+        $this->publishMessage($this->createMessageHelper((array)$this->meta, (array)$this->data), $exchange, $routingKey);
     }
 
     /**
